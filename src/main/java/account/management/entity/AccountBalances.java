@@ -10,9 +10,8 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import java.math.BigDecimal;
 import java.sql.Date;
-import java.util.Map;
+import java.util.List;
 
 
 @Entity
@@ -59,8 +58,8 @@ public class AccountBalances {
     private java.util.Date modifyDate;
 
     @Type(type = "json")
-    @Column(name = "balance_components",columnDefinition = "jsonb")
-    private Map<String,BigDecimal> balanceComponents;
+    @Column(name = "balance_buckets",columnDefinition = "jsonb")
+    private List<RealBalanceBuckets> realBalanceBuckets;
 
     @Column
     private Long lastTransactionID;

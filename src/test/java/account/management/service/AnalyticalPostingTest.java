@@ -12,17 +12,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class AnalyticalPostingTest {
 
-    static String DEF_CREDIT = "C";
-    static String DEF_DEBIT = "D";
-    static String DEF_ONE_THOUSAND = "1000";
-    static String DEF_MINUS_ONE_THOUSAND = "-1000";
-    static String DEF_ZERO = "0";
-    static String DEF_ONE = "1";
+    static final String DEF_CREDIT = "C";
+    static final String DEF_DEBIT = "D";
+    static final String DEF_ONE_THOUSAND = "1000";
+    static final String DEF_MINUS_ONE_THOUSAND = "-1000";
+    static final String DEF_ZERO = "0";
+    static final String DEF_ONE = "1";
 
-    static BigDecimal TOPOS_ONE_THOUSAND = new BigDecimal(DEF_ONE_THOUSAND);
-    static BigDecimal TOPOS_MINUS_ONE_THOUSAND = new BigDecimal(DEF_MINUS_ONE_THOUSAND);
-    static BigDecimal TOPOS_ZERO = new BigDecimal(DEF_ZERO);
-    static BigDecimal TOPOS_ONE = new BigDecimal(DEF_ONE);
+    static final BigDecimal TOPOS_ONE_THOUSAND = new BigDecimal(DEF_ONE_THOUSAND);
+    static final BigDecimal TOPOS_MINUS_ONE_THOUSAND = new BigDecimal(DEF_MINUS_ONE_THOUSAND);
+    static final BigDecimal TOPOS_ZERO = new BigDecimal(DEF_ZERO);
+    static final BigDecimal TOPOS_ONE = new BigDecimal(DEF_ONE);
 
     @BeforeEach
     void init(){
