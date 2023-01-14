@@ -1,17 +1,17 @@
-package account.management.entity;
+package account.management.repository;
 
-import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.*;
 
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import java.math.BigDecimal;
+import  jakarta.persistence.*;
+import  jakarta.persistence.Entity;
+import  jakarta.persistence.Index;
+import  jakarta.persistence.Table;
+import org.hibernate.type.SqlTypes;
+
 import java.util.Map;
 
 @Entity
@@ -19,9 +19,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @ToString
-@TypeDefs({
-        @TypeDef(name = "json", typeClass = JsonType.class)
-})
+
 @Table(name="TransactionDefinitions",
         indexes = {@Index(   name = "transaction_definitions_index_by_transaction_group_transaction_code",
                 columnList = "schema_code,transaction_code",
@@ -42,18 +40,18 @@ public class TransactionDefinitions {
     @Column(name="transaction_group", length = 50)
     private String transactionGroup;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    //@CreationTimestamp
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_date")
     private java.util.Date createDate;
 
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    //@UpdateTimestamp
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modify_date")
     private java.util.Date modifyDate;
 
-    @Type(type = "json")
-    @Column(name = "custom_analitycal_attributes",columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "custom_analitycal_attributes",columnDefinition = "json")
     private Map<String, String> customAnalyticalAttributes;
 
 }

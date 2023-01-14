@@ -1,11 +1,11 @@
 package account.management;
 
-import account.management.entity.AccountBalances;
-import account.management.entity.TransactionBalances;
-import account.management.entity.AccountAttributes;
-import account.management.repository.AccountBalancesRepository;
+import account.management.repository.TransactionBalances;
 import account.management.repository.TransactionBalancesRepository;
-import account.management.repository.AccountAttributesRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.DateSerializer;
+import com.fasterxml.jackson.module.paranamer.ParanamerModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -13,26 +13,24 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.kafka.annotation.EnableKafka;
-
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @EnableKafka
 @SpringBootApplication
 @Slf4j
-@EnableAutoConfiguration(exclude = LiquibaseAutoConfiguration.class)
-public class TransactionsApplication implements ApplicationRunner {
+@EnableAutoConfiguration
+@EnableJpaRepositories
+@EntityScan("account.management.repository")
+public class TransactionsApplication implements ApplicationRunner, ApplicationListener {
 
 	@Autowired
-	AccountBalancesRepository accountBalancesRepository;
-
-	@Autowired
-	AccountAttributesRepository accountAttributesRepository;
+	private ObjectMapper objectMapper;
 
 	@Autowired
 	TransactionBalancesRepository transactionBalancesRepository;
@@ -54,7 +52,7 @@ public class TransactionsApplication implements ApplicationRunner {
 			balances.put("OVERPAYMENT",1);
 			transactionBalances.setBalanceComponents(balances);
 			transactionBalancesRepository.saveAndFlush(transactionBalances);
-			log.info("Transaction_blances : {}", transactionBalances.toString());
+			log.info("Transaction_balances : {}", transactionBalances);
 
 			TransactionBalances transactionBalances1 = new TransactionBalances();
 			transactionBalances1.setSchemaCode("LOAN1");
@@ -66,7 +64,7 @@ public class TransactionsApplication implements ApplicationRunner {
 			balances.put("TOTAL_INTEREST",1);
 			transactionBalances1.setBalanceComponents(balances);
 			transactionBalancesRepository.saveAndFlush(transactionBalances1);
-			log.info("Transaction_blances : {}", transactionBalances1.toString());
+			log.info("Transaction_balances : {}", transactionBalances1);
 
 
 			TransactionBalances transactionBalances2 = new TransactionBalances();
@@ -79,7 +77,7 @@ public class TransactionsApplication implements ApplicationRunner {
 			balances.put("TOTAL_PENALTY_INTEREST",1);
 			transactionBalances2.setBalanceComponents(balances);
 			transactionBalancesRepository.saveAndFlush(transactionBalances2);
-			log.info("Transaction_blances : {}", transactionBalances2.toString());
+			log.info("Transaction_balances : {}", transactionBalances2);
 
 		}
 		catch (Exception e)
@@ -89,4 +87,12 @@ public class TransactionsApplication implements ApplicationRunner {
 
 	}
 
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		SimpleModule module = new SimpleModule();
+		module.addSerializer(java.sql.Date.class, new DateSerializer());
+		objectMapper.registerModule(new ParanamerModule());
+		objectMapper.registerModule(module);
+
+	}
 }

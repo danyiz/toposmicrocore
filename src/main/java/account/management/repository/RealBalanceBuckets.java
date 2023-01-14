@@ -1,9 +1,10 @@
-package account.management.entity;
+package account.management.repository;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -12,8 +13,8 @@ import java.util.List;
 @Setter
 @JsonSerialize
 @JsonDeserialize
-public class BalanceBucketDefinitions {
+@NoArgsConstructor
+public class RealBalanceBuckets {
     @JsonProperty("BalanceBuckets")
-    List<BucketItemsDefinitions> balanceBuckets;
+    List<RealBucket> balanceBuckets;
 }
-

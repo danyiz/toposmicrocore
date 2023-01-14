@@ -1,25 +1,21 @@
-package account.management.entity;
+package account.management.repository;
 
-
-import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import org.hibernate.annotations.JdbcTypeCode;
 
-import javax.persistence.*;
+
+import  jakarta.persistence.*;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-@TypeDefs({
-        @TypeDef(name = "jsonb", typeClass = JsonType.class)
-})
+
 @Table(name="SchemaBalanceDefinitions",
         indexes = {@Index(   name = "schema_balance_definitions_index_by_schema_code",
                 columnList = "schema_code",
@@ -34,8 +30,8 @@ public class SchemaBalanceDefinitions {
     @Column(name="schema_code", length = 50)
     private String schemaCode;
 
-    @Type(type = "jsonb")
-    @Column(name = "balance_definitions",columnDefinition = "jsonb")
+     @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "balance_definitions",columnDefinition = "JSON")
     private BalanceBucketDefinitions balanceBucketDefinitions;
 
 }

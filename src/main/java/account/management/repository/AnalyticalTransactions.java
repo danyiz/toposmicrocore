@@ -1,18 +1,12 @@
-package account.management.entity;
+package account.management.repository;
 
-import account.management.model.CustomLocalDateTimeSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
-
-import javax.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import  jakarta.persistence.*;
+import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -23,13 +17,11 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @ToString
-@TypeDefs({
-        @TypeDef(name = "json", typeClass = JsonType.class)
-})
-@Table(name="AnalyticalTransaction",
-        indexes = @Index(name = "analytical_transaction_index_by_account_number",
+
+@Table(name="AnalyticalTransactions",
+        indexes = @Index(name = "analytical_transactions_index_by_account_number",
                 columnList = "account_number,book_date,transaction_id,transaction_code", unique = true))
-public class AnalyticalTransaction {
+public class AnalyticalTransactions {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -66,8 +58,8 @@ public class AnalyticalTransaction {
     @Column(name="teller_code", length = 50)
     String tellerCode;
 
-    @Type(type = "json")
-    @Column(name = "postingsMetaData",columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "postingsMetaData",columnDefinition = "json")
     private Map<String,String> postingMetaData;
 
     @Column(name="process_id")
@@ -76,12 +68,12 @@ public class AnalyticalTransaction {
     @Column(name="batch_id")
     Long batchID;
 
-    @Type(type = "json")
-    @Column(name = "batchMetaData",columnDefinition = "jsonb")
+     @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "batchMetaData",columnDefinition = "json")
     private Map<String,String> batchMetaData;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    //@CreationTimestamp
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_date")
     private java.util.Date createDate;
 

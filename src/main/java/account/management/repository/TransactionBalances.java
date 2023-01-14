@@ -1,17 +1,17 @@
-package account.management.entity;
+package account.management.repository;
 
-
-import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.*;
 
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import  jakarta.persistence.*;
+import  jakarta.persistence.Entity;
+import  jakarta.persistence.Index;
+import  jakarta.persistence.Table;
+import org.hibernate.type.SqlTypes;
+
 import java.util.Map;
 
 @Entity
@@ -19,9 +19,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @ToString
-@TypeDefs({
-        @TypeDef(name = "json", typeClass = JsonType.class)
-})
+
 @Table(name="TransactionBalances",
         indexes = {@Index(   name = "transaction_balances_index_by_schema_transaction_group",
                             columnList = "schema_code,transaction_group",
@@ -39,18 +37,18 @@ public class TransactionBalances {
     @Column(name="transaction_group", length = 50)
     private String transactionGroup;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    //@CreationTimestamp
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_date")
     private java.util.Date createDate;
 
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    //@UpdateTimestamp
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modify_date")
     private java.util.Date modifyDate;
 
-    @Type(type = "json")
-    @Column(name = "balance_components",columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "balance_components",columnDefinition = "json")
     private Map<String, Integer> balanceComponents;
 
 }

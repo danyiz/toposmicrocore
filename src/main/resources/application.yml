@@ -1,0 +1,45 @@
+server:
+  port: 8099
+databaseChangeLog:
+  -
+spring:
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss.SSS
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5433/yugabyte?stringtype=unspecified
+    username: yugabyte
+    password: yugabyte
+    driverClassName: org.postgresql.Driver
+  sql:
+    init:
+      mode: always
+  jpa:
+    database: postgresql
+    defer-datasource-initialization: true
+    properties:
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: UNSPECIFIED
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: none
+  kafka:
+    consumer:
+      bootstrap-servers: '127.0.0.1:29092'
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.JsonSerializer
+      group-id: corebanking
+    topic:
+      name:
+        consumer: topos.core.incoming.postings
+    listener:
+      concurrency: '1'
+    producer:
+      bootstrap-servers: '127.0.0.1:29092'
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer

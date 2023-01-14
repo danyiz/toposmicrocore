@@ -1,6 +1,5 @@
 package account.management.repository;
 
-import account.management.entity.AccountBalances;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

@@ -1,15 +1,16 @@
-package account.management.entity;
+package account.management.repository;
 
-import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.*;
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import  jakarta.persistence.*;
+import  jakarta.persistence.Entity;
+import  jakarta.persistence.Index;
+import  jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.sql.Date;
 import java.util.List;
 
@@ -19,12 +20,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-@TypeDefs({
-        @TypeDef(name = "json", typeClass = JsonType.class)
-})
 @Table(name="AccountBalances",
-        indexes = @Index(name = "account_balances_index_by_account_number_and_book_date_and_sequence",
-                columnList = "account_number asc,book_date asc,sequence asc"))
+        indexes = @Index(name = "account_balances_index_by_account_number_book_date_sequence_ccy",
+                columnList = "account_number asc,book_date asc,sequence asc, currency asc"))
 public class AccountBalances {
 
     @Id
@@ -47,19 +45,19 @@ public class AccountBalances {
     @Column(name="sequence")
     private Integer sequence;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    //@CreationTimestamp
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_date")
     private java.util.Date createDate;
 
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    //@UpdateTimestamp
+    //@Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modify_date")
     private java.util.Date modifyDate;
 
-    @Type(type = "json")
-    @Column(name = "balance_buckets",columnDefinition = "jsonb")
-    private List<RealBalanceBuckets> realBalanceBuckets;
+     @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "balance_buckets",columnDefinition = "json")
+    private RealBalanceBuckets realBalanceBuckets;
 
     @Column
     private Long lastTransactionID;

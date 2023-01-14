@@ -1,5 +1,4 @@
 package account.management.repository;
-import account.management.entity.TransactionDefinitions;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransactionDefinitionsRepository extends JpaRepository<TransactionDefinitions,Long> {

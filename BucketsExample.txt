@@ -1,0 +1,12 @@
+RealBalanceBuckets
+	 List<RealBucket> balanceBuckets
+			RealBucket
+				bucketName  = PRINCIPAL
+				Map<String, BigDecimal> bucketItems;
+     									PRINCIPAL_OUT = 1111110
+	     								PRINCIPAL_DUE = 0
+            RealBucket
+				bucketName  = INTEREST
+				Map<String, BigDecimal> bucketItems;
+     									INTEREST_DUE = 100000
+	     								BOUGHT_INTEREST = 10000
