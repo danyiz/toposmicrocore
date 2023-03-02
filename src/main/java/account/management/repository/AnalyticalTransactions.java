@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import  jakarta.persistence.*;
 import org.hibernate.type.SqlTypes;
@@ -72,8 +73,8 @@ public class AnalyticalTransactions {
     @Column(name = "batchMetaData",columnDefinition = "json")
     private Map<String,String> batchMetaData;
 
-    //@CreationTimestamp
-    //@Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_date")
     private java.util.Date createDate;
 

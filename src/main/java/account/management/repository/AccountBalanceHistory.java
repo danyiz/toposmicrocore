@@ -1,29 +1,27 @@
 package account.management.repository;
 
+
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import  jakarta.persistence.*;
-import  jakarta.persistence.Entity;
-import  jakarta.persistence.Index;
-import  jakarta.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
-import java.sql.Date;
 
+import java.sql.Date;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-@Table(name="AccountBalances",
-        indexes = @Index(name = "account_balances_index_by_account_number_book_date_sequence_ccy",
-                columnList = "account_number asc,book_date asc,sequence asc, currency asc"))
-public class AccountBalances {
+@Table(name="AccountBalanceHistory",
+        indexes = @Index(name = "acc_bal_hist_index_by_account_number_book_date_sequence_ccy",
+                columnList = "account_number asc,book_date asc, currency asc"))
+public class AccountBalanceHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -42,25 +40,16 @@ public class AccountBalances {
     @Column(name="value_date")
     private Date valueDate;
 
-    @Column(name="sequence")
-    private Integer sequence;
-
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_date")
     private java.util.Date createDate;
 
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modify_date")
-    private java.util.Date modifyDate;
-
-     @JdbcTypeCode(SqlTypes.JSON)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "balance_buckets",columnDefinition = "json")
     private RealBalanceBuckets realBalanceBuckets;
 
     @Column
-    private Long lastTransactionID;
+    private Long transactionID;
 
 }
-

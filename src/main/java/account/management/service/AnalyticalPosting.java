@@ -1,10 +1,19 @@
+/************************************************************************************************
+/*      Copyright 2022-2023 Dhisor-Group Kft. All rights reserved. Used by permission.
+/*
+/*************************************************************************************************/
+
 package account.management.service;
 
 import account.management.model.AnalyticalTransactionDTO;
 import account.management.repository.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gruelbox.transactionoutbox.TransactionOutbox;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +28,19 @@ import java.util.stream.Collectors;
 public class AnalyticalPosting {
 
     @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
+    ModelMapper mapper;
+
+    @Autowired
     AnalyticalTransactionRepository analyticalTransactionRepository;
 
     @Autowired
     AccountBalancesRepository accountBalancesRepository;
+
+    @Autowired
+    AccountBalanceHistoryRepository accountBalanceHistoryRepository;
 
     @Autowired
     TransactionBalancesRepository transactionBalancesRepository;
@@ -35,6 +53,12 @@ public class AnalyticalPosting {
 
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    private TransactionOutbox outbox;
+
+    @Autowired
+    KafkaTemplate kafkaTemplate;
 
     @Autowired
     AccountAttributesRepository accountAttributesRepository;
@@ -50,9 +74,16 @@ public class AnalyticalPosting {
                 AnalyticalTransactions savedTransaction = analyticalTransactionRepository.saveAndFlush(analyticalTransactions);
                 accountAttributes.setLastTransactionId(analyticalTransactions.getTransactionID());
                 AccountBalances newBalances = balanceUpdate(analyticalTransactions,accountAttributes);
+                AccountBalanceHistory newBalanceHistory = mapToHistory(newBalances);
+                newBalanceHistory= accountBalanceHistoryRepository.saveAndFlush(newBalanceHistory);
+                // insert into balance change log and outbox it as balance change
                 log.info("Transaction succeed: {}", analyticalTransactions.getId().toString());
                 accountAttributesRepository.saveAndFlush(accountAttributes);
+                //raise an event with new posting
+                outbox.schedule(getClass()).publishCreatedAnalyticalTransaction(analyticalTransactions.getId());
                 //raise an event with new balances + "put it to outbox"
+                outbox.schedule(getClass()).publishCreatedBalanceHistory(newBalanceHistory.getId());
+                //outbox.schedule(getClass()).publishUpdatedBalances(analyticalTransactions.getId());
                 return savedTransaction;
             } catch (Exception e) {
                 log.info("Transaction failed: {}", e.getMessage());
@@ -65,6 +96,32 @@ public class AnalyticalPosting {
             return null;
         }
 
+    }
+
+    private AccountBalanceHistory mapToHistory(AccountBalances newBalances) {
+        AccountBalanceHistory newHist =  new AccountBalanceHistory();
+        newHist.setAccountNumber(newBalances.getAccountNumber());
+        newHist.setBookDate(newBalances.getBookDate());
+        newHist.setCurrencyCode(newBalances.getCurrencyCode());
+        newHist.setTransactionID(newBalances.getLastTransactionID());
+        newHist.setRealBalanceBuckets(newBalances.getRealBalanceBuckets());
+        return newHist;
+    }
+
+    void publishCreatedAnalyticalTransaction(long id) throws JsonProcessingException {
+        log.info("Scheduled event executed outside transaction.......{}",id);
+        AnalyticalTransactions tran = analyticalTransactionRepository.getReferenceById(id);
+        var analyticalTransactionDTO = mapper.map(tran,AnalyticalTransactionDTO.class);
+        // todo add a key add a header
+        kafkaTemplate.send("topos.core.postings", objectMapper.writeValueAsString(analyticalTransactionDTO));
+
+    }
+
+    void publishCreatedBalanceHistory(long id) throws JsonProcessingException {
+        log.info("Scheduled event executed outside transaction.......{}",id);
+        Optional<AccountBalanceHistory> historyRecord = accountBalanceHistoryRepository.findById(id);
+        // todo add a key  add a header
+        kafkaTemplate.send("topos.core.balances", objectMapper.writeValueAsString(historyRecord.get()));
     }
 
     public AccountBalances balanceUpdate(AnalyticalTransactions analyticalTransactions, AccountAttributes accountAttributes) {
@@ -90,8 +147,6 @@ public class AnalyticalPosting {
         } else {
             log.info("Create first balances...");
             oldBalances = createFirstForTheBookingDate(analyticalTransactions, transactionBalancesParams, accountAttributes);
-
-
         }
 
         return createNextBalances(analyticalTransactions,transactionBalancesParams,oldBalances);
@@ -120,8 +175,7 @@ public class AnalyticalPosting {
         if (lastBalance.isPresent()) {
             if (!(lastBalance.get().getRealBalanceBuckets()==null)) {
               realBalanceBuckets = lastBalance.get().getRealBalanceBuckets();
-                // TODO
-                // check the particular balance item, if not exists add it to the bucket by definition
+                // todo check the particular balance item, if not exists add it to the bucket by definition
               log.debug("Account Balance1 record found: {}, Last trn ID: {}", lastBalance.get().getId(), lastBalance.get().getLastTransactionID());
             }
             else{
@@ -143,8 +197,7 @@ public class AnalyticalPosting {
 
         log.info(balanceBucketDefinitionsList.toString());
 
-        // TODO
-        // Fill up real balance bucket with zero for that particular bucket item
+        // todo Fill up real balance bucket with zero for that particular bucket item
 
         List<String> balances = transactionBalances.getBalanceComponents().entrySet().stream()
                 .map(Map.Entry::getKey)
@@ -198,7 +251,11 @@ public class AnalyticalPosting {
 
         List<RealBucket> newBuckets = new ArrayList<>();
         List<RealBucket> realBuckets = actualBalanceComponents.getBalanceBuckets();
-        boolean balanceFound = false;
+        Map<String,Integer> validation = new HashMap<>();
+        for (Map.Entry<String,Integer> balanceComponent : balanceComponentsToUpdate.entrySet()) {
+            validation.put(balanceComponent.getKey(),1);
+        }
+
         for (RealBucket bucket : realBuckets){
             Map<String,BigDecimal> bucketItems = bucket.getBucketItems();
             Map<String,BigDecimal> newBalances = new HashMap<>();
@@ -207,13 +264,13 @@ public class AnalyticalPosting {
                 String balanceName = balanceItem.getKey();
                 BigDecimal newBalance = balanceItem.getValue();
                 newBalances.put(balanceItem.getKey(),balanceItem.getValue());
-                balanceFound = false;
+
                 for (Map.Entry<String,Integer> balanceComponent : balanceComponentsToUpdate.entrySet()) {
 
                      log.info("Bucket : {}, Balance to Update: {}", bucket.getBucketName(), balanceComponent.getKey());
                      log.info("Balance name : {}, balance old value: {}",balanceName,newBalance);
                     if (balanceName.equals(balanceComponent.getKey())) {
-                        balanceFound = true;
+                        validation.remove(balanceComponent.getKey());
                         log.info("Bucket : {}", bucket.getBucketName() );
 
                         newBalance = updateOneBalanceComponent(analyticalTransactions.getCreditDebitFlag(),
@@ -221,18 +278,19 @@ public class AnalyticalPosting {
                         log.info("Update. Schema code: {}, balance name = {}, new value = {}" ,transactionBalances.getSchemaCode(),balanceItem.getKey(),newBalance);
                         newBalances.put(balanceName, newBalance);
                     }
+
                 }
-
-
             }
 
             bucket.setBucketItems(newBalances);
             newBuckets.add(bucket);
         }
-        if(!balanceFound){
-            //todo
-            // if balance is not found add the bucket and the balance
-            log.info("Pardon. One of the Balance component isn't present in buckets");
+        if(!validation.isEmpty()){
+            //todo if balance is not found add the bucket and the balance
+            log.info("Pardon. These Balance component isn't present in buckets {}",validation.keySet().stream().toList());
+        }
+        else{
+            log.info("All balance components are updated.");
         }
         actualBalanceComponents.setBalanceBuckets(newBuckets);
         actualBalances.setValueDate(analyticalTransactions.getValueDate());

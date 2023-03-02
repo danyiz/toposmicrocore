@@ -23,20 +23,20 @@ public class AccountAttributes  {
     @Column(name="account_number", length = 16)
     String accountNumber;
 
-    //@CreationTimestamp
-    //@Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_date")
     private java.util.Date createDate;
 
-    //@UpdateTimestamp
-    //@Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modify_date")
     private java.util.Date modifyDate;
 
     @Column(name = "last_transaction_id")
     private Long lastTransactionId;
 
-     @JdbcTypeCode(SqlTypes.JSON)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "transaction_attributes",columnDefinition = "json")
     private Map<String, String> transactionAttributes;
     //pointers to template, instance, custom attributes which should include in postings metadata

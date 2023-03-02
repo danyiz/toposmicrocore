@@ -10,3 +10,67 @@ RealBalanceBuckets
 				Map<String, BigDecimal> bucketItems;
      									INTEREST_DUE = 100000
 	     								BOUGHT_INTEREST = 10000
+
+
+{
+    "BalanceBuckets": [
+        {
+            "BucketName": "BALANCE",
+            "BucketItems": {
+                "BOOK_BALANCE": -13000,
+                "VALUE_BALANCE": -13000
+            }
+        },
+        {
+            "BucketName": "OUTSTANDING_PRINCIPAL",
+            "BucketItems": {
+                "OUTSTANDING_PRINCIPAL": 0
+            }
+        },
+        {
+            "BucketName": "CAPITALIZED_PRINCIPAL",
+            "BucketItems": {
+                "CAPITALIZED_FEE": 0,
+                "CAPITALIZED_INTEREST": 0,
+                "CAPITALIZED_PENALTY_INTEREST": 0
+            }
+        },
+        {
+            "BucketName": "DUE_PRINCIPAL",
+            "BucketItems": {
+                "DUE_PRINCIPAL": 0
+            }
+        },
+        {
+            "BucketName": "INTEREST",
+            "BucketItems": {
+                "DUE_INTEREST": -18000,
+                "BOUGHT_INTEREST": 0
+            }
+        },
+        {
+            "BucketName": "PENALTY_INTEREST_ON_PRINCIPAL",
+            "BucketItems": {
+                "DUE_PENALTY_ON_PRINCIPAL": 0,
+                "BOUGHT_DUE_PENALTY_ON_PRINCIPAL": 0
+            }
+        },
+        {
+            "BucketName": "PENALTY_INTEREST_ON_INTEREST",
+            "BucketItems": {
+                "DUE_PENALTY_ON_INTEREST": 0,
+                "BOUGHT_DUE_PENALTY_ON_INTEREST": 0
+            }
+        },
+        {
+            "BucketName": "REPAYMENT",
+            "BucketItems": {
+                "CREDIT_REFUND": 0,
+                "CREDIT_BALANCE": 5000,
+                "CREDIT_ADJUSTMENT_FEE": 0,
+                "CREDIT_ADJUSTMENT_INTEREST": 0,
+                "CREDIT_ADJUSTMENT_PENALTY": 0
+            }
+        }
+    ]
+}

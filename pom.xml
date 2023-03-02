@@ -78,13 +78,41 @@
 			<optional>true</optional>
 		</dependency>
 
+		<dependency>
+			<groupId>com.gruelbox</groupId>
+			<artifactId>transactionoutbox-spring</artifactId>
+			<version>5.1.300</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.gruelbox/transactionoutbox-core -->
+		<dependency>
+			<groupId>com.gruelbox</groupId>
+			<artifactId>transactionoutbox-core</artifactId>
+			<version>5.1.300</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.gruelbox/service-core -->
+		<dependency>
+			<groupId>com.gruelbox</groupId>
+			<artifactId>service-core</artifactId>
+			<version>4.3.16.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+		</dependency>
 
 
-	<!--	<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.9.2</version>
-		</dependency>-->
+
+
+
+		<!--	<dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.9.2</version>
+            </dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>

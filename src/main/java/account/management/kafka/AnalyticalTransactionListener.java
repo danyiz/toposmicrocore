@@ -40,8 +40,6 @@ public class AnalyticalTransactionListener {
     @SendTo
     public Message<?> transactionListener( ConsumerRecord<String, Object> kafkaMessage) throws JsonProcessingException {
 
-
-
         log.info("Topic: {}", kafkaMessage.topic());
         log.info("Key: {}", kafkaMessage.key());
         log.info("Headers: {}", kafkaMessage.headers());

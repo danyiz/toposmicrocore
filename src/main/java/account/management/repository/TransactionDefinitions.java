@@ -40,13 +40,13 @@ public class TransactionDefinitions {
     @Column(name="transaction_group", length = 50)
     private String transactionGroup;
 
-    //@CreationTimestamp
-    //@Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "create_date")
     private java.util.Date createDate;
 
-    //@UpdateTimestamp
-    //@Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modify_date")
     private java.util.Date modifyDate;
 
