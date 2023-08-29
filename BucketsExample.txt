@@ -12,6 +12,24 @@ RealBalanceBuckets
 	     								BOUGHT_INTEREST = 10000
 
 
+[
+{"BucketName": "BALANCE", 
+"BucketItems": {"BOOK_BALANCE": "-8991.00", 
+		"VALUE_BALANCE": "-1998.00"}}, 
+{"BucketName": "PRINCIPAL", 
+ "BucketItems": {"DUE": "-28900.00", 
+		 "OUTSTANDING": "-5994.00"}}, 
+{"BucketName": "INTEREST", 
+ "BucketItems": {"DUE": "-15300.00", 
+		"BOUGTH": "-6300.00"}}, 
+{"BucketName":  "PENALTY_INTEREST", 
+ "BucketItems": {"DUE": "-1422.00"}}, 
+{"BucketName":   "MANAGEMENT_FEE", 
+ "BucketItems": {"DUE": "-1222.00", 
+ 		 "FINAL": "-1000", 
+ 		 "ACCURUAL": "-22.00"}}
+]
+
 {
     "BalanceBuckets": [
         {
