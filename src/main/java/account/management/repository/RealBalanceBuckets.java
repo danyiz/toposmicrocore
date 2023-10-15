@@ -15,6 +15,6 @@ import java.util.List;
 @JsonDeserialize
 @NoArgsConstructor
 public class RealBalanceBuckets {
-    @JsonProperty("BalanceBuckets")
+    @JsonProperty("balanceBuckets")
     List<RealBucket> balanceBuckets;
 }

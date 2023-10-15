@@ -57,7 +57,7 @@ public class AccountBalances {
 
      @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "balance_buckets",columnDefinition = "json")
-    private RealBalanceBuckets realBalanceBuckets;
+    private RealBalanceBuckets balanceBuckets;
 
     @Column
     private Long lastTransactionID;

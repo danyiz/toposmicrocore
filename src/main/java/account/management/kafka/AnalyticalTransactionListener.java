@@ -38,7 +38,7 @@ public class AnalyticalTransactionListener {
 
     @KafkaListener(topics = "${spring.kafka.topic.name.consumer}"/*, containerFactory = "analyticalTransactionConcurrentKafkaListenerContainerFactory"*/)
     @SendTo
-    public Message<?> transactionListener( ConsumerRecord<String, Object> kafkaMessage) throws JsonProcessingException {
+    public Message<?> transactionListener( ConsumerRecord<String, Object> kafkaMessage) throws JsonProcessingException, InterruptedException {
 
         log.info("Topic: {}", kafkaMessage.topic());
         log.info("Key: {}", kafkaMessage.key());
@@ -50,13 +50,13 @@ public class AnalyticalTransactionListener {
 
         log.debug("Payload: {}",objectMapper.writeValueAsString(analyticalTransactionDTO));
 
-        AnalyticalTransactions transaction = analyticalPosting.createAnalyticalTransaction(analyticalTransactionDTO);
+        analyticalPosting.createAnalyticalTransaction(analyticalTransactionDTO);
 
         var postingResults = PostingResult.builder()
-                .processID(transaction.getProcessID())
-                .postingStatus("SUCCEED")
-                .transactionID(transaction.getTransactionID())
-                .batchID(transaction.getBatchID())
+                .processID(analyticalTransactionDTO.getProcessID())
+                .postingStatus("ACCEPTED")
+                .transactionID(analyticalTransactionDTO.getTransactionID())
+                .batchID(analyticalTransactionDTO.getProcessID())
                 .build();
 
         Headers nativeHeaders = kafkaMessage.headers();
