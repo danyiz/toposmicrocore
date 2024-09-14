@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.4</version>
+		<version>3.2.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>account.management</groupId>
@@ -23,26 +23,58 @@
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-data-r2dbc</artifactId>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-webflux</artifactId>-->
+<!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>6.4.4.Final</version>
+			<type>pom</type>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>org.postgresql</groupId>-->
+<!--			<artifactId>r2dbc-postgresql</artifactId>-->
+<!--			<scope>runtime</scope>-->
+<!--		</dependency>-->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-data-jpa</artifactId>-->
+<!--		</dependency>-->
 
-		<dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka</artifactId>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.kafka</groupId>-->
+<!--			<artifactId>spring-kafka</artifactId>-->
 
-		</dependency>
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.modelmapper</groupId>
@@ -66,7 +98,6 @@
 			<artifactId>micrometer-registry-prometheus</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -78,41 +109,19 @@
 			<optional>true</optional>
 		</dependency>
 
-		<dependency>
-			<groupId>com.gruelbox</groupId>
-			<artifactId>transactionoutbox-spring</artifactId>
-			<version>5.1.300</version>
-		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.gruelbox/transactionoutbox-core -->
-		<dependency>
-			<groupId>com.gruelbox</groupId>
-			<artifactId>transactionoutbox-core</artifactId>
-			<version>5.1.300</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.gruelbox/service-core -->
-		<dependency>
-			<groupId>com.gruelbox</groupId>
-			<artifactId>service-core</artifactId>
-			<version>4.3.16.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>1</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.gruelbox</groupId>-->
+<!--			<artifactId>transactionoutbox-spring</artifactId>-->
+<!--			<version>5.4.421</version>-->
+<!--		</dependency>-->
 
 
-
-
-
-		<!--	<dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.9.2</version>
-            </dependency>-->
+<!--			<dependency>-->
+<!--                <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--                <artifactId>jackson-databind</artifactId>-->
+<!--                <version>2.9.2</version>-->
+<!--            </dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>

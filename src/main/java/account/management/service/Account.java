@@ -2,26 +2,28 @@ package account.management.service;
 
 import account.management.model.AnalyticalTransactionDTO;
 import account.management.repository.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gruelbox.transactionoutbox.TransactionOutbox;
-import jakarta.transaction.Transactional;
+//import com.gruelbox.transactionoutbox.TransactionOutbox;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 @NoArgsConstructor
+@Getter
+@Setter
 public class Account {
     private String accountNumber;
 
@@ -52,11 +54,12 @@ public class Account {
     @Autowired
     ModelMapper modelMapper;
 
-    @Autowired
-    private TransactionOutbox outbox;
+    //@Autowired
+    //private TransactionOutbox outbox;
 
-    @Autowired
-    KafkaTemplate kafkaTemplate;
+//    @Autowired
+//    KafkaTemplate kafkaTemplate;
+
     @Autowired
     AccountAttributesRepository accountAttributesRepository;
 
@@ -65,30 +68,30 @@ public class Account {
         return this;
     }
 
-    @Transactional
-    public void update(AnalyticalTransactionDTO analyticalTransactionDTO) {
+    public AnalyticalTransactionDTO update(AnalyticalTransactionDTO analyticalTransactionDTO) {
         log.info("Executor:{}, {}",accountNumber,analyticalTransactionDTO.getProcessID());
         //lock the account
         try {
             AccountAttributes accountAttributes = accountAttributesRepository.lockTheAttributes(analyticalTransactionDTO.getAccountNumber());
+            log.info("account attributes {}", accountAttributes.getAccountNumber());
             try {
                 AnalyticalTransactions analyticalTransactions = modelMapper.map(analyticalTransactionDTO, AnalyticalTransactions.class);
-                AnalyticalTransactions savedTransaction = analyticalTransactionRepository.saveAndFlush(analyticalTransactions);
+                AnalyticalTransactions savedTransaction = analyticalTransactionRepository.save(analyticalTransactions);
                 accountAttributes.setLastTransactionId(analyticalTransactions.getTransactionID());
                 AccountBalances newBalances = balanceUpdate(analyticalTransactions,accountAttributes);
                 AccountBalanceHistory newBalanceHistory = mapToHistory(newBalances);
-                newBalanceHistory= accountBalanceHistoryRepository.saveAndFlush(newBalanceHistory);
+                newBalanceHistory= accountBalanceHistoryRepository.save(newBalanceHistory);
                 // insert into balance change log and outbox it as balance change
                 log.info("Transaction succeed: {}", analyticalTransactions.getId().toString());
-                accountAttributesRepository.saveAndFlush(accountAttributes);
+                accountAttributesRepository.save(accountAttributes);
                 //raise an event with new posting
-                outbox.schedule(getClass()).publishCreatedAnalyticalTransaction(analyticalTransactions.getId());
+                //outbox.schedule(getClass()).publishCreatedAnalyticalTransaction(analyticalTransactions.getId());
                 //raise an event with new balances + "put it to outbox"
-                outbox.schedule(getClass()).publishCreatedBalanceHistory(newBalanceHistory.getId());
+                //outbox.schedule(getClass()).publishCreatedBalanceHistory(newBalanceHistory.getId());
                 //outbox.schedule(getClass()).publishUpdatedBalances(analyticalTransactions.getId());
 
             } catch (Exception e) {
-                log.info("Transaction failed: {}", e.getMessage());
+                log.info("Transaction failed: {}", e);
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
             }
@@ -97,7 +100,7 @@ public class Account {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
         }
-
+        return analyticalTransactionDTO;
     }
 
     private AccountBalanceHistory mapToHistory(AccountBalances newBalances) {
@@ -110,23 +113,27 @@ public class Account {
         return newHist;
     }
 
-    void publishCreatedAnalyticalTransaction(long id) throws JsonProcessingException {
-        log.info("Scheduled event executed outside transaction.......{}",id);
-        AnalyticalTransactions tran = analyticalTransactionRepository.getReferenceById(id);
-        var analyticalTransactionDTO = mapper.map(tran,AnalyticalTransactionDTO.class);
-        // todo add a key add a header
-        kafkaTemplate.send("topos.core.postings", objectMapper.writeValueAsString(analyticalTransactionDTO));
+//    void publishCreatedAnalyticalTransaction(long id) throws JsonProcessingException {
+//        log.info("Scheduled event executed outside transaction.......{}",id);
+//        AnalyticalTransactions tran = (AnalyticalTransactions)analyticalTransactionRepository.findById(id).subscribe();
+//        var analyticalTransactionDTO = mapper.map(tran,AnalyticalTransactionDTO.class);
+//        // todo add a key add a header
+//        kafkaTemplate.send("topos.core.postings", objectMapper.writeValueAsString(analyticalTransactionDTO));
+//
+//    }
+//
+//    void publishCreatedBalanceHistory(long id) throws JsonProcessingException {
+//        log.info("Scheduled event executed outside transaction.......{}",id);
+//        AccountBalanceHistory historyRecord = (AccountBalanceHistory)accountBalanceHistoryRepository.findById(id).subscribe();
+//        // todo add a key  add a header
+//        if(historyRecord!=null){
+//            kafkaTemplate.send("topos.core.balances", objectMapper.writeValueAsString(historyRecord));
+//        }else {
+//            log.info("History record with {} not found",id);
+//        }
+//    }
 
-    }
-
-    void publishCreatedBalanceHistory(long id) throws JsonProcessingException {
-        log.info("Scheduled event executed outside transaction.......{}",id);
-        Optional<AccountBalanceHistory> historyRecord = accountBalanceHistoryRepository.findById(id);
-        // todo add a key  add a header
-        kafkaTemplate.send("topos.core.balances", objectMapper.writeValueAsString(historyRecord.get()));
-    }
-
-    public AccountBalances balanceUpdate(AnalyticalTransactions analyticalTransactions, AccountAttributes accountAttributes) {
+    public AccountBalances   balanceUpdate(AnalyticalTransactions analyticalTransactions, AccountAttributes accountAttributes) {
         //read the last balance record if not exist we need to create the first
         String currencyCode = analyticalTransactions.getTransactionCurrency();
         Optional<AccountBalances> lastBalance = Optional.ofNullable(accountBalancesRepository.findByAccountNumberAndBookDateAndCurrencyCode(analyticalTransactions.getAccountNumber(),
@@ -269,15 +276,15 @@ public class Account {
 
                 for (Map.Entry<String,Integer> balanceComponent : balanceComponentsToUpdate.entrySet()) {
 
-                    log.info("Bucket : {}, Balance to Update: {}", bucket.getBucketName(), balanceComponent.getKey());
-                    log.info("Balance name : {}, balance old value: {}",balanceName,newBalance);
+                    //log.info("Bucket : {}, Balance to Update: {}", bucket.getBucketName(), balanceComponent.getKey());
+                    //log.info("Balance name : {}, balance old value: {}",balanceName,newBalance);
                     if (balanceName.equals(balanceComponent.getKey())) {
                         validation.remove(balanceComponent.getKey());
-                        log.info("Bucket : {}", bucket.getBucketName() );
+                        //log.info("Bucket : {}", bucket.getBucketName() );
 
                         newBalance = updateOneBalanceComponent(analyticalTransactions.getCreditDebitFlag(),
                                 analyticalTransactions.getTransactionAmount(), balanceItem.getValue(), BigDecimal.valueOf(balanceComponent.getValue().longValue()));
-                        log.info("Update. Schema code: {}, balance name = {}, new value = {}" ,transactionBalances.getSchemaCode(),balanceItem.getKey(),newBalance);
+                       // log.info("Update. Schema code: {}, balance name = {}, new value = {}" ,transactionBalances.getSchemaCode(),balanceItem.getKey(),newBalance);
                         newBalances.put(balanceName, newBalance);
                     }
 

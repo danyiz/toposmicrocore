@@ -6,46 +6,42 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
-@Entity
+
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-@Table(name="AccountBalanceHistory",
-        indexes = @Index(name = "acc_bal_hist_index_by_account_number_book_date_sequence_ccy",
-                columnList = "account_number asc,book_date asc, currency asc"))
+@Entity(name="AccountBalanceHistory")
 public class AccountBalanceHistory {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(name="account_number", length = 16)
+    @Column(name = "account_number")
     private String accountNumber;
 
-    @Column(name="currency", length = 3)
+    @Column(name = "currency")
     private String currencyCode;
 
-    @Column(name="book_date")
+    @Column(name = "book_date")
     private Date bookDate;
 
-    @Column(name="value_date")
+    @Column(name = "value_date")
     private Date valueDate;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "create_date")
-    private java.util.Date createDate;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "balance_buckets",columnDefinition = "json")
+    @Column(name = "create_date")
+    @CreatedDate
+    private LocalDateTime createDate;
+
+    @Column(name = "balance_buckets")
     private RealBalanceBuckets balanceBuckets;
 
     @Column

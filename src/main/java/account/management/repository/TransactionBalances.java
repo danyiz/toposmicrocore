@@ -1,54 +1,47 @@
 package account.management.repository;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.*;
-
-import  jakarta.persistence.*;
-import  jakarta.persistence.Entity;
-import  jakarta.persistence.Index;
-import  jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
-@Entity
+
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
 
-@Table(name="TransactionBalances",
-        indexes = {@Index(   name = "transaction_balances_index_by_schema_transaction_group",
-                            columnList = "schema_code,transaction_group",
-                            unique = true)})
+@Entity(name="TransactionBalances")
 public class TransactionBalances {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(name="schema_code", length = 50)
+    @Column(name = "schema_code")
     private String schemaCode;
 
-    @Column(name="transaction_group", length = 50)
+    @Column(name = "transaction_group")
     private String transactionGroup;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     @Column(name = "create_date")
-    private java.util.Date createDate;
+    private LocalDateTime createDate;
 
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    @LastModifiedDate
     @Column(name = "modify_date")
     private java.util.Date modifyDate;
 
+    @Column(name = "balance_components")
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "balance_components",columnDefinition = "json")
     private Map<String, Integer> balanceComponents;
 
 }

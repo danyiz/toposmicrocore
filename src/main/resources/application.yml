@@ -1,5 +1,5 @@
 server:
-  port: 8099
+  port: 8087
 databaseChangeLog:
   -
 spring:
@@ -14,6 +14,14 @@ spring:
   sql:
     init:
       mode: always
+#  r2dbc:
+#    url: r2dbc:postgresql://postgres@localhost:5433/yugabyte?stringtype=unspecified
+#    username: yugabyte
+#    password: yugabyte
+#    repositories:
+#      enabled: true
+#    initialization-mode: always
+
   jpa:
     database: postgresql
     defer-datasource-initialization: true
@@ -28,18 +36,18 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: none
-  kafka:
-    consumer:
-      bootstrap-servers: '127.0.0.1:29092'
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.JsonSerializer
-      group-id: corebanking
-    topic:
-      name:
-        consumer: topos.core.incoming.postings
-    listener:
-      concurrency: '1'
-    producer:
-      bootstrap-servers: '127.0.0.1:29092'
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#  kafka:
+#    consumer:
+#      bootstrap-servers: '127.0.0.1:29092'
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.apache.kafka.common.serialization.JsonSerializer
+#      group-id: corebanking
+#    topic:
+#      name:
+#        consumer: topos.core.incoming.postings
+#    listener:
+#      concurrency: '1'
+#    producer:
+#      bootstrap-servers: '127.0.0.1:29092'
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.apache.kafka.common.serialization.StringSerializer

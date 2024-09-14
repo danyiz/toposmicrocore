@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ import java.util.Map;
 @JsonSerialize
 @JsonDeserialize
 @NoArgsConstructor
-public class RealBucket {
+public class RealBucket implements Serializable {
         @JsonProperty("BucketName")
         private String bucketName;
         @JsonProperty("BucketItems")

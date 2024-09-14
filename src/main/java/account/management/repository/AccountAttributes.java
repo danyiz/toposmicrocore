@@ -1,58 +1,57 @@
 package account.management.repository;
 
+import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.*;
-import  jakarta.persistence.*;
-import  jakarta.persistence.Entity;
-import  jakarta.persistence.Index;
-import  jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-@Table(name="AccountAttributes",
-        indexes = @Index(name = "account_attributes_index_by_account_number",
-                columnList = "account_number",unique = true))
+@Entity(name="AccountAttributes")
 public class AccountAttributes  {
 
     @Id
-    @Column(name="account_number", length = 16)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @Column(name = "account_number")
     String accountNumber;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     @Column(name = "create_date")
-    private java.util.Date createDate;
+    private LocalDateTime createDate;
 
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    @LastModifiedDate
     @Column(name = "modify_date")
-    private java.util.Date modifyDate;
+    private LocalDateTime modifyDate;
 
     @Column(name = "last_transaction_id")
     private Long lastTransactionId;
 
+    @Column(name = "transaction_attributes")
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "transaction_attributes",columnDefinition = "json")
     private Map<String, String> transactionAttributes;
     //pointers to template, instance, custom attributes which should include in postings metadata
     // {template_attributes:"ATTR1,ATTR2,ATTR2",
     // instance_attributes:"ATTR1, ATTR2",
     // custom_attributes:"ATTR1,ATTR2"} //                                                                                             ATTR"}
 
+    @Column(name = "template_attributes")
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "template_attributes",columnDefinition = "json")
     private Map<String, String> templateAttributes; // product level descriptor needed and maintenance in separate MS
 
+    @Column(name = "instance_attributes")
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "instance_attributes",columnDefinition = "json")
     private Map<String, String> instanceAttributes; // product level descriptor needed and maintenance in separate MS
 
+    @Column(name = "custom_attributes")
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "custom_attributes",columnDefinition = "json")
     private Map<String, String> customAttributes; // product level descriptor needed and maintenance in separate MS
 }

@@ -1,81 +1,78 @@
 package account.management.repository;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
-import  jakarta.persistence.*;
 import org.hibernate.type.SqlTypes;
+import org.springframework.data.annotation.CreatedDate;
+
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
 
-@Table(name="AnalyticalTransactions",
-        indexes = @Index(name = "analytical_transactions_index_by_account_number",
-                columnList = "account_number,book_date,transaction_id,transaction_code", unique = true))
+@Entity(name="AnalyticalTransactions")
 public class AnalyticalTransactions {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(name="account_number", length = 16)
+    @Column(name = "account_number")
     private String accountNumber;
 
-    @Column(name="transaction_code", length = 50)
+    @Column(name = "transaction_code")
     private String transactionCode;
 
-    @Column(name="transaction_id", length = 16)
+    @Column(name = "transaction_id")
     private Long transactionID;
 
-    @Column(name="transaction_amount")
+    @Column(name = "transaction_amount")
     private BigDecimal transactionAmount;
 
-    @Column(name="credit_debit", length = 1)
+    @Column(name = "credit_debit")
     private String creditDebitFlag;
 
-    @Column(name="book_date")
+    @Column(name = "book_date")
     private Date bookDate;
 
-    @Column(name="value_date")
+    @Column(name = "value_date")
     private Date valueDate;
 
-    @Column(name="input_date")
+    @Column(name = "input_date")
     LocalDateTime inputDate;
 
-    @Column(name="transaction_currency",length = 3)
+    @Column(name = "transaction_currency")
     String transactionCurrency;
 
-    @Column(name="teller_code", length = 50)
+    @Column(name = "teller_code")
     String tellerCode;
 
+    @Column(name = "postingsMetaData")
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "postingsMetaData",columnDefinition = "json")
     private Map<String,String> postingMetaData;
 
-    @Column(name="process_id")
+    @Column(name = "process_id")
     Long processID;
 
-    @Column(name="batch_id")
+    @Column(name = "batch_id")
     Long batchID;
 
-     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "batchMetaData",columnDefinition = "json")
+    @Column(name = "batchMetaData")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Map<String,String> batchMetaData;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     @Column(name = "create_date")
-    private java.util.Date createDate;
+    private LocalDateTime createDate;
 
 }
