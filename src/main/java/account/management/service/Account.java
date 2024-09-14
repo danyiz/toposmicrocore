@@ -117,7 +117,6 @@ public class Account {
 //        log.info("Scheduled event executed outside transaction.......{}",id);
 //        AnalyticalTransactions tran = (AnalyticalTransactions)analyticalTransactionRepository.findById(id).subscribe();
 //        var analyticalTransactionDTO = mapper.map(tran,AnalyticalTransactionDTO.class);
-//        // todo add a key add a header
 //        kafkaTemplate.send("topos.core.postings", objectMapper.writeValueAsString(analyticalTransactionDTO));
 //
 //    }
@@ -125,7 +124,6 @@ public class Account {
 //    void publishCreatedBalanceHistory(long id) throws JsonProcessingException {
 //        log.info("Scheduled event executed outside transaction.......{}",id);
 //        AccountBalanceHistory historyRecord = (AccountBalanceHistory)accountBalanceHistoryRepository.findById(id).subscribe();
-//        // todo add a key  add a header
 //        if(historyRecord!=null){
 //            kafkaTemplate.send("topos.core.balances", objectMapper.writeValueAsString(historyRecord));
 //        }else {
